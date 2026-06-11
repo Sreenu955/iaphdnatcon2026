@@ -1,0 +1,248 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Plus Jakarta Sans", sans-serif;
+  
+  --color-primary: #14213D;
+  --color-accent: #00A8CC;
+  --color-midnight: #F5F7FA;
+  --color-secondary: #ffffff;
+  --color-softgray: #DDE3EA;
+  --color-lightbg: #F5F7FA;
+  --color-cta: #C8A96B;
+  
+  --animate-float: float 6s ease-in-out infinite;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+}
+
+@layer base {
+  body {
+    background-color: #F5F7FA;
+    color: #14213D;
+    @apply antialiased font-sans;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+    color: #14213D;
+  }
+}
+
+@utility glass {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@utility text-outline {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgba(255, 255, 255, 0.3);
+}
+
+@utility text-outline-primary {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #00A8CC;
+}
+
+@keyframes shimmer-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer-bar {
+  animation: shimmer-bar 1.5s infinite linear;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+  display: inline-flex;
+}
+
+.animate-marquee:hover, 
+.animate-marquee:focus,
+a:hover .animate-marquee,
+.group:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #DDE3EA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00A8CC;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C8A96B;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Print styles for elegant official PDF receipt */
+@media print {
+  /* Hide non-print components */
+  .no-print, 
+  .no-print *, 
+  header, 
+  footer, 
+  nav, 
+  aside, 
+  [role="navigation"], 
+  .navbar, 
+  .footer {
+    display: none !important;
+  }
+
+  /* Reset document for printing */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything under body * except the printable elements and their parent trees */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Make the print targets and their children visible */
+  #printable-receipt-card, 
+  #printable-receipt-card *,
+  #printable-receipt,
+  #printable-receipt * {
+    visibility: visible !important;
+  }
+
+  /* Collapse height of all parents of the printable receipt to avoid blank space and page breaks */
+  #root, 
+  .min-h-screen, 
+  .max-w-6xl, 
+  .space-y-8, 
+  main, 
+  section, 
+  article {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    position: static !important;
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* Default page settings for portrait card receipt */
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm;
+  }
+
+  /* Portrait receipt specific styles */
+  #printable-receipt-card {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 24px !important;
+    border: 2px solid #000000 !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Adjust texts for dynamic printer-friendly styling */
+  #printable-receipt-card p, 
+  #printable-receipt-card h2, 
+  #printable-receipt-card h4, 
+  #printable-receipt-card span {
+    color: #000000 !important;
+  }
+
+  /* Highlight specific keys and headers */
+  #printable-receipt-card .text-primary {
+    color: #00A8CC !important;
+  }
+  
+  #printable-receipt-card .text-green-400 {
+    color: #10b981 !important;
+    font-weight: 800 !important;
+  }
+
+  /* Print decorations and dividers */
+  #printable-receipt-card .border-t {
+    border-top: 1px solid #e5e7eb !important;
+  }
+
+  #printable-receipt-card .border {
+    border: 1px solid #e5e7eb !important;
+  }
+
+  #printable-receipt-card .bg-white\/5 {
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}
+
+/* CKEditor Height Overrides */
+.ck-editor__editable_inline {
+  min-height: 150px !important;
+  color: #000000 !important;
+}
+
+/* Ensure all textareas have black text color */
+textarea {
+  color: #000000 !important;
+}
+
+/* Hide the original textarea used by CKEditor inside the wrapper */
+.ckeditor-wrapper textarea {
+  display: none !important;
+}
+
+
+
+
