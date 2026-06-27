@@ -204,6 +204,82 @@ function get_email_header_html($conn) {
     </table>";
 }
 
+function generate_confirmation_email_html($fullName, $generated_id, $category, $conn) {
+    $email_header_url = get_absolute_logo_url('emailheader.png');
+    $email_footer_url = get_absolute_logo_url('emailfooter.png');
+    
+    $is_student = (stripos($category, 'Student') !== false);
+    $whatsapp_link = $is_student ? 'https://chat.whatsapp.com/ELeMQjJwwYwJz5cgVbieNQ' : 'https://chat.whatsapp.com/H6DEAhsUwuHlwtFDNhK6Sx';
+
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>30th IAPHD NATCON 2026 Registration Confirmation</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #2d3748; margin: 0; padding: 20px 0; }
+            .wrapper { width: 100%; table-layout: fixed; background-color: #f4f7f6; padding-bottom: 40px; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+            .content { padding: 30px 40px; }
+            h2 { color: #1a202c; font-size: 22px; margin-top: 0; }
+            p { font-size: 15px; line-height: 1.7; color: #4a5568; margin-bottom: 20px; }
+            .highlight-box { background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px 20px; margin: 25px 0; border-radius: 0 8px 8px 0; }
+            .highlight-box p { margin: 5px 0; color: #2b6cb0; }
+            .btn { display: inline-block; background-color: #00A8CC; color: #ffffff !important; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; margin-top: 10px; font-size: 14px; }
+            .btn-green { background-color: #25D366; }
+            .social-icons { margin-top: 15px; margin-bottom: 30px; }
+            .social-icons a { display: inline-block; margin-right: 15px; text-decoration: none; }
+            .social-icons img { width: 36px; height: 36px; border: 0; }
+            .footer-text { color: #718096; font-size: 13px; margin-top: 30px; line-height: 1.6; }
+        </style>
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='container'>
+                <img src='{$email_header_url}' alt='30th IAPHD NATCON 2026 Header' style='width: 100%; max-width: 600px; height: auto; display: block; border: 0;' />
+                
+                <div class='content'>
+                    <h2>Registration Confirmed!</h2>
+                    <p>Dear Dr. <strong>" . htmlspecialchars($fullName) . "</strong>,</p>
+                    <p>Greetings from the Organizing Committee of the 30th IAPHD National Conference 2026! We are pleased to confirm your registration for the upcoming event in Vizag.</p>
+                    
+                    <div class='highlight-box'>
+                        <p><strong>Registration No:</strong> " . htmlspecialchars($generated_id) . "</p>
+                        <p><strong>Category:</strong> " . htmlspecialchars($category) . "</p>
+                    </div>
+                    
+                    <p>Thank you for joining us. We look forward to welcoming you to the conference. For more details about the schedule and venue, please visit our official website.</p>
+                    <a href='https://iaphdnatcon2026.com/' class='btn'>Visit Website</a>
+                    
+                    <div style='margin-top: 35px; border-top: 1px solid #e2e8f0; padding-top: 25px;'>
+                        <h3 style='font-size: 16px; color: #2d3748; margin-bottom: 15px;'>Join our WhatsApp Community</h3>
+                        <p style='margin-bottom: 15px;'>Stay updated with the latest announcements and connect with other delegates.</p>
+                        <a href='{$whatsapp_link}' class='btn btn-green'>Join WhatsApp Group</a>
+                    </div>
+                    
+                    <div style='margin-top: 35px; border-top: 1px solid #e2e8f0; padding-top: 25px;'>
+                        <h3 style='font-size: 16px; color: #2d3748; margin-bottom: 15px;'>Download Your E-Receipt</h3>
+                        <p style='margin-bottom: 15px;'>You can download your official payment receipt from our utility portal.</p>
+                        <a href='https://iaphdnatcon2026.com/utility' class='btn' style='background-color: #4a5568;'>Download Receipt</a>
+                    </div>
+                    
+                    <div style='margin-top: 35px; border-top: 1px solid #e2e8f0; padding-top: 25px; text-align: center;'>
+                        <h3 style='font-size: 16px; color: #2d3748; margin-bottom: 15px;'>Follow Us</h3>
+                        <div class='social-icons'>
+                            <a href='https://www.facebook.com/share/1Bqr8GVgv1/?mibextid=wwXlfr'><img src='" . get_absolute_logo_url('facebook.png') . "' alt='Facebook'/></a>
+                            <a href='https://www.instagram.com/30th_iaphd_natcon_2026?igsh=MXYyb2Uxc3FhdjFobg%3D%3D&utm_source=qr'><img src='" . get_absolute_logo_url('instagram.png') . "' alt='Instagram'/></a>
+                        </div>
+                        <p class='footer-text'>Warm regards,<br>Organizing Committee<br>30th IAPHD NATCON 2026</p>
+                    </div>
+                </div>
+                
+                <img src='{$email_footer_url}' alt='30th IAPHD NATCON 2026 Footer' style='width: 100%; max-width: 600px; height: auto; display: block; border: 0;' />
+            </div>
+        </div>
+    </body>
+    </html>";
+}
+
 function confirm_offline_registration_if_needed($conn, $id, $smtp_host, $smtp_port, $smtp_user, $smtp_pass, $smtp_auth) {
     // 1. Fetch current registration
     $stmt_find = $conn->prepare("SELECT * FROM registrations WHERE id = :id LIMIT 1");
@@ -215,21 +291,26 @@ function confirm_offline_registration_if_needed($conn, $id, $smtp_host, $smtp_po
         return array("success" => false, "error" => "Registration record not found.");
     }
 
-    $is_offline = (strpos($id, 'OFFLINE-') === 0 || $record['offline_online'] === 'offline');
+    $needs_upgrade = (strpos($id, 'NATCON-') !== 0);
     
-    if ($is_offline && $record['status'] !== 'CONFIRMED') {
-        // Generate next NATCON-XXXX ID
-        $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE 'NATCON-%' ORDER BY created_at DESC, id DESC LIMIT 1");
+    if ($needs_upgrade) {
+        // Generate next NATCON-SD-XXX or NATCON-FD-XXX ID
+        $is_student = (stripos($record['category'], 'Student') !== false);
+        $prefix = $is_student ? 'NATCON-SD-' : 'NATCON-FD-';
+
+        $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE :prefix ORDER BY LENGTH(id) DESC, id DESC LIMIT 1");
+        $prefix_like = $prefix . '%';
+        $stmt_count->bindParam(':prefix', $prefix_like);
         $stmt_count->execute();
         $latest = $stmt_count->fetch(PDO::FETCH_ASSOC);
 
         if ($latest) {
-            $num = intval(str_replace('NATCON-', '', $latest['id']));
+            $num = intval(str_replace($prefix, '', $latest['id']));
             $next_num = $num + 1;
         } else {
             $next_num = 1;
         }
-        $new_id = "NATCON-" . str_pad($next_num, 4, "0", STR_PAD_LEFT);
+        $new_id = $prefix . str_pad($next_num, 3, "0", STR_PAD_LEFT);
 
         // Generate password if empty
         $password = !empty($record['password']) ? $record['password'] : substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, 8);
@@ -264,114 +345,6 @@ function confirm_offline_registration_if_needed($conn, $id, $smtp_host, $smtp_po
             $paymentDate = !empty($updated_record['paymentDate']) ? $updated_record['paymentDate'] : date('Y-m-d');
 
             $to = $email;
-            $subject = "Registration Confirmed - 30th IAPHD NATCON 2026 (ID: $new_id)";
-            
-            $message = "
-            <html>
-            <head>
-                <title>30th IAPHD NATCON 2026 Registration Confirmation</title>
-                <style>
-                    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f7f9fc; color: #333333; margin: 0; padding: 0; }
-                    .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e1e8ed; }
-                    .header { background-color: #002147; padding: 40px 20px; text-align: center; color: #ffffff; border-bottom: 4px solid #d90a2c; }
-                    .header h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-                    .header p { margin: 10px 0 0 0; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #a0aec0; text-transform: uppercase; }
-                    .content { padding: 40px 30px; }
-                    .greeting { font-size: 18px; font-weight: 700; color: #002147; margin-bottom: 20px; }
-                    .badge { display: inline-block; background-color: #d90a2c; color: #ffffff; font-weight: 800; padding: 8px 16px; border-radius: 4px; font-size: 14px; letter-spacing: 1px; margin-bottom: 30px; }
-                    .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                    .invoice-table th, .invoice-table td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; text-align: left; }
-                    .invoice-table th { background-color: #f7fafc; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; }
-                    .invoice-table td { font-size: 13px; font-weight: 600; }
-                    .invoice-table .label { color: #718096; font-size: 11px; text-transform: uppercase; font-weight: 700; }
-                    .invoice-table .value { color: #2d3748; }
-                    .invoice-table .amount { color: #d90a2c; font-weight: 800; font-size: 16px; }
-                    .status-pill { display: inline-block; background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-                    .footer { background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #edf2f7; font-size: 11px; color: #718096; line-height: 1.6; }
-                    .footer a { color: #d90a2c; text-decoration: none; font-weight: 700; }
-                </style>
-            </head>
-            <body>
-                <div class='container'>
-                    " . get_email_header_html($conn) . "
-                    <div class='content'>
-                        <div class='greeting'>Dear $fullName,</div>
-                        <p style='font-size: 14px; line-height: 1.6; color: #4a5568; margin-bottom: 25px;'>
-                            Thank you for registering for the 30th IAPHD National Conference (IAPHD NATCON 2026) in Visakhapatnam. We are pleased to confirm that your offline registration has been verified and confirmed successfully.
-                        </p>
-                        
-                        <div style='background-color: #f7fafc; border: 1px solid #edf2f7; padding: 20px; border-radius: 6px; margin-bottom: 25px; text-align: center;'>
-                            <p style='margin: 0 0 10px 0; font-size: 11px; font-weight: 800; color: #718096; text-transform: uppercase; letter-spacing: 1px;'>My Profile Login Details</p>
-                            <p style='margin: 5px 0; font-size: 13px; color: #2d3748;'><strong>Registration ID:</strong> <span style='font-family: monospace; font-size: 14px;'>$new_id</span></p>
-                            <p style='margin: 5px 0; font-size: 13px; color: #2d3748;'><strong>Password:</strong> <span style='font-family: monospace; font-size: 14px;'>$password</span></p>
-                            <p style='margin: 15px 0 0 0; font-size: 10px; color: #a0aec0;'>You can log in to your profile at any time to edit your details (except email and mobile number).</p>
-                        </div>
-                        
-                        <div style='text-align: center;'>
-                            <div class='badge'>REGISTRATION ID: $new_id</div>
-                        </div>
-                        
-                        <table class='invoice-table'>
-                            <thead>
-                                <tr>
-                                    <th colspan='2'>Registration Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class='label' style='width: 40%;'> Name</td>
-                                    <td class='value'>$fullName</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>City</td>
-                                    <td class='value'>$city</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>Category</td>
-                                    <td class='value'>$category</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>Registration Tier</td>
-                                    <td class='value'>" . ucfirst($tier) . "</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>Transaction ID</td>
-                                    <td class='value' style='font-family: monospace; font-size: 12px;'>OFFLINE (CONFIRMED)</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>Amount Paid</td>
-                                    <td class='value amount'>₹" . number_format($amountPaid) . "</td>
-                                </tr>
-                                <tr>
-                                    <td class='label'>Payment Status</td>
-                                    <td class='value'><span class='status-pill'>CONFIRMED</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <div style='background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; border-radius: 4px; margin-bottom: 30px;'>
-                            <p style='margin: 0; font-size: 11px; color: #2b6cb0; line-height: 1.6; font-weight: 600; text-transform: uppercase;'>
-                                Venue & Dates
-                            </p>
-                            <p style='margin: 5px 0 0 0; font-size: 12px; color: #2d3748; font-weight: 700;'>
-                                Anil Neerukonda Institute of Dental Sciences (ANIDS), Visakhapatnam<br>
-                                November 27 - 29, 2026
-                            </p>
-                            <a class='bg-[#00A8CC] text-white font-bold py-2 px-4 rounded' style='text-decoration: none; margin-top: 5px;' href='https://share.google/aLOIFbJOzwsDUgz0I'>location</a>
-                        </div>
-                        
-                        <p style='font-size: 12px; line-height: 1.6; color: #718096;'>
-                            If you have any questions or require assistance with your registration, please do not hesitate to contact our secretariat at <a href='mailto:iaphdnatcon26@gmail.com'>iaphdnatcon26@gmail.com</a>.
-                        </p>
-                    </div>
-                    <div class='footer'>
-                        <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
-                        Department of Public Health Dentistry, ANIDS<br>
-                        <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
-                    </div>
-                </div>
-            </body>
-            </html>";
 
             $record_data = array(
                 'id' => $new_id,
@@ -1228,7 +1201,7 @@ if ($method === 'POST') {
                             <div class='footer'>
                                 <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
                                 Department of Public Health Dentistry, ANIDS<br>
-                                <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
+                                <a href='https://iaphdnatcon2026.com/'>iaphdnatcon2026.com</a>
                             </div>
                         </div>
                     </body>
@@ -1411,7 +1384,7 @@ if ($method === 'POST') {
                             <div class='footer'>
                                 <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
                                 Department of Public Health Dentistry, ANIDS<br>
-                                <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
+                                <a href='https://iaphdnatcon2026.com/'>iaphdnatcon2026.com</a>
                             </div>
                         </div>
                     </body>
@@ -1527,6 +1500,18 @@ if ($method === 'POST') {
     if (isset($data->action) && $data->action === 'update_registration') {
         if (!empty($data->id)) {
             try {
+                // First fetch the existing record to prevent overwriting with empty fields on partial updates
+                $stmt_fetch = $conn->prepare("SELECT * FROM registrations WHERE id = :id LIMIT 1");
+                $stmt_fetch->bindParam(':id', $data->id);
+                $stmt_fetch->execute();
+                $existing = $stmt_fetch->fetch(PDO::FETCH_ASSOC);
+
+                if (!$existing) {
+                    http_response_code(404);
+                    echo json_encode(array("error" => "Registration record not found."));
+                    exit();
+                }
+
                 $stmt = $conn->prepare("UPDATE registrations SET 
                     fullName = :fullName, 
                     email = :email, 
@@ -1556,32 +1541,32 @@ if ($method === 'POST') {
                     paymentScreenshot = :paymentScreenshot
                     WHERE id = :id");
                 
-                $fullName = htmlspecialchars(strip_tags($data->fullName));
-                $email = htmlspecialchars(strip_tags($data->email));
-                $mobile = htmlspecialchars(strip_tags($data->mobile));
-                $gender = !empty($data->gender) ? htmlspecialchars(strip_tags($data->gender)) : null;
-                $institution = !empty($data->institution) ? htmlspecialchars(strip_tags($data->institution)) : null;
-                $designation = !empty($data->designation) ? htmlspecialchars(strip_tags($data->designation)) : null;
-                $councilRegNo = !empty($data->councilRegNo) ? htmlspecialchars(strip_tags($data->councilRegNo)) : null;
-                $address = !empty($data->address) ? htmlspecialchars(strip_tags($data->address)) : null;
-                $city = !empty($data->city) ? htmlspecialchars(strip_tags($data->city)) : null;
-                $state = !empty($data->state) ? htmlspecialchars(strip_tags($data->state)) : null;
-                $pincode = !empty($data->pincode) ? htmlspecialchars(strip_tags($data->pincode)) : null;
-                $tier = htmlspecialchars(strip_tags($data->tier));
-                $category = htmlspecialchars(strip_tags($data->category));
-                $iaphdNo = !empty($data->iaphdNo) ? htmlspecialchars(strip_tags($data->iaphdNo)) : null;
-                $foodPreference = !empty($data->foodPreference) ? htmlspecialchars(strip_tags($data->foodPreference)) : null;
-                $hasAccompanying = !empty($data->hasAccompanying) ? htmlspecialchars(strip_tags($data->hasAccompanying)) : 'no';
-                $accompanyingName = !empty($data->accompanyingName) ? htmlspecialchars(strip_tags($data->accompanyingName)) : null;
-                $accompanyingCount = !empty($data->accompanyingCount) ? intval($data->accompanyingCount) : 0;
-                $accompanyingFood = !empty($data->accompanyingFood) ? htmlspecialchars(strip_tags($data->accompanyingFood)) : null;
-                $transactionId = !empty($data->transactionId) ? htmlspecialchars(strip_tags($data->transactionId)) : null;
-                $paymentDate = !empty($data->paymentDate) ? htmlspecialchars(strip_tags($data->paymentDate)) : null;
-                $amountPaid = !empty($data->amountPaid) ? floatval($data->amountPaid) : 0.00;
-                $status = !empty($data->status) ? htmlspecialchars(strip_tags($data->status)) : 'PENDING';
-                $offline_online = !empty($data->offline_online) ? htmlspecialchars(strip_tags($data->offline_online)) : 'online';
-                $profilePic = !empty($data->profilePic) ? $data->profilePic : null;
-                $paymentScreenshot = !empty($data->paymentScreenshot) ? $data->paymentScreenshot : null;
+                $fullName = isset($data->fullName) ? htmlspecialchars(strip_tags($data->fullName)) : $existing['fullName'];
+                $email = isset($data->email) ? htmlspecialchars(strip_tags($data->email)) : $existing['email'];
+                $mobile = isset($data->mobile) ? htmlspecialchars(strip_tags($data->mobile)) : $existing['mobile'];
+                $gender = isset($data->gender) ? htmlspecialchars(strip_tags($data->gender)) : $existing['gender'];
+                $institution = isset($data->institution) ? htmlspecialchars(strip_tags($data->institution)) : $existing['institution'];
+                $designation = isset($data->designation) ? htmlspecialchars(strip_tags($data->designation)) : $existing['designation'];
+                $councilRegNo = isset($data->councilRegNo) ? htmlspecialchars(strip_tags($data->councilRegNo)) : $existing['councilRegNo'];
+                $address = isset($data->address) ? htmlspecialchars(strip_tags($data->address)) : $existing['address'];
+                $city = isset($data->city) ? htmlspecialchars(strip_tags($data->city)) : $existing['city'];
+                $state = isset($data->state) ? htmlspecialchars(strip_tags($data->state)) : $existing['state'];
+                $pincode = isset($data->pincode) ? htmlspecialchars(strip_tags($data->pincode)) : $existing['pincode'];
+                $tier = isset($data->tier) ? htmlspecialchars(strip_tags($data->tier)) : $existing['tier'];
+                $category = isset($data->category) ? htmlspecialchars(strip_tags($data->category)) : $existing['category'];
+                $iaphdNo = isset($data->iaphdNo) ? htmlspecialchars(strip_tags($data->iaphdNo)) : $existing['iaphdNo'];
+                $foodPreference = isset($data->foodPreference) ? htmlspecialchars(strip_tags($data->foodPreference)) : $existing['foodPreference'];
+                $hasAccompanying = isset($data->hasAccompanying) ? htmlspecialchars(strip_tags($data->hasAccompanying)) : $existing['hasAccompanying'];
+                $accompanyingName = isset($data->accompanyingName) ? htmlspecialchars(strip_tags($data->accompanyingName)) : $existing['accompanyingName'];
+                $accompanyingCount = isset($data->accompanyingCount) ? intval($data->accompanyingCount) : $existing['accompanyingCount'];
+                $accompanyingFood = isset($data->accompanyingFood) ? htmlspecialchars(strip_tags($data->accompanyingFood)) : $existing['accompanyingFood'];
+                $transactionId = isset($data->transactionId) ? htmlspecialchars(strip_tags($data->transactionId)) : $existing['transactionId'];
+                $paymentDate = isset($data->paymentDate) ? htmlspecialchars(strip_tags($data->paymentDate)) : $existing['paymentDate'];
+                $amountPaid = isset($data->amountPaid) ? floatval($data->amountPaid) : floatval($existing['amountPaid']);
+                $status = isset($data->status) ? htmlspecialchars(strip_tags($data->status)) : $existing['status'];
+                $offline_online = isset($data->offline_online) ? htmlspecialchars(strip_tags($data->offline_online)) : $existing['offline_online'];
+                $profilePic = isset($data->profilePic) ? $data->profilePic : $existing['profilePic'];
+                $paymentScreenshot = isset($data->paymentScreenshot) ? $data->paymentScreenshot : $existing['paymentScreenshot'];
                 
                 $stmt->bindParam(':id', $data->id);
                 $stmt->bindParam(':fullName', $fullName);
@@ -1616,7 +1601,9 @@ if ($method === 'POST') {
                 $new_id = $data->id;
                 $generated_password = null;
                 $upgraded = false;
-                if ($status === 'CONFIRMED' && (strpos($data->id, 'OFFLINE-') === 0 || $offline_online === 'offline')) {
+                
+                // Upgrade ID to NATCON final ID if confirmed and not already upgraded
+                if ($status === 'CONFIRMED' && strpos($data->id, 'NATCON-') !== 0) {
                     $res = confirm_offline_registration_if_needed($conn, $data->id, $smtp_host, $smtp_port, $smtp_user, $smtp_pass, $smtp_auth);
                     if ($res['success'] && $res['upgraded']) {
                         $new_id = $res['newId'];
@@ -1658,107 +1645,8 @@ if ($method === 'POST') {
                     $generated_id = $record['id'];
                     
                     $to = $email;
-                    $subject = "Registration Confirmed - 30th IAPHD NATCON 2026 (ID: $generated_id) [Resent]";
-                    
-                    $message = "
-                    <html>
-                    <head>
-                        <title>30th IAPHD NATCON 2026 Registration Confirmation</title>
-                        <style>
-                            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f7f9fc; color: #333333; margin: 0; padding: 0; }
-                            .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e1e8ed; }
-                            .header { background-color: #002147; padding: 40px 20px; text-align: center; color: #ffffff; border-bottom: 4px solid #d90a2c; }
-                            .header h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-                            .header p { margin: 10px 0 0 0; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #a0aec0; text-transform: uppercase; }
-                            .content { padding: 40px 30px; }
-                            .greeting { font-size: 18px; font-weight: 700; color: #002147; margin-bottom: 20px; }
-                            .badge { display: inline-block; background-color: #d90a2c; color: #ffffff; font-weight: 800; padding: 8px 16px; border-radius: 4px; font-size: 14px; letter-spacing: 1px; margin-bottom: 30px; }
-                            .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                            .invoice-table th, .invoice-table td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; text-align: left; }
-                            .invoice-table th { background-color: #f7fafc; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; }
-                            .invoice-table td { font-size: 13px; font-weight: 600; }
-                            .invoice-table .label { color: #718096; font-size: 11px; text-transform: uppercase; font-weight: 700; }
-                            .invoice-table .value { color: #2d3748; }
-                            .invoice-table .amount { color: #d90a2c; font-weight: 800; font-size: 16px; }
-                            .status-pill { display: inline-block; background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-                            .footer { background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #edf2f7; font-size: 11px; color: #718096; line-height: 1.6; }
-                            .footer a { color: #d90a2c; text-decoration: none; font-weight: 700; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            " . get_email_header_html($conn) . "
-                            <div class='content'>
-                                <div class='greeting'>Dear $fullName,</div>
-                                <p style='font-size: 14px; line-height: 1.6; color: #4a5568; margin-bottom: 25px;'>
-                                    Thank you for registering for the 30th IAPHD National Conference (NATCON 2026) in Visakhapatnam. We are pleased to confirm that your  registration has been received successfully.
-                                </p>
-                                
-                                <div style='text-align: center;'>
-                                    <div class='badge'>REGISTRATION ID: $generated_id</div>
-                                </div>
-                                
-                                <table class='invoice-table'>
-                                    <thead>
-                                        <tr>
-                                            <th colspan='2'>Registration Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class='label' style='width: 40%;'> Name</td>
-                                            <td class='value'>$fullName</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>City</td>
-                                            <td class='value'>$city</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>Category</td>
-                                            <td class='value'>$category</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>Registration Tier</td>
-                                            <td class='value'>" . ucfirst($tier) . "</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>Transaction ID</td>
-                                            <td class='value' style='font-family: monospace; font-size: 12px;'>" . ($transactionId ? $transactionId : 'N/A') . "</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>Amount Paid</td>
-                                            <td class='value amount'>₹" . number_format($amountPaid) . "</td>
-                                        </tr>
-                                        <tr>
-                                            <td class='label'>Payment Status</td>
-                                            <td class='value'><span class='status-pill'>" . strtoupper($status) . "</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                
-                                <div style='background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; border-radius: 4px; margin-bottom: 30px;'>
-                                    <p style='margin: 0; font-size: 11px; color: #2b6cb0; line-height: 1.6; font-weight: 600; text-transform: uppercase;'>
-                                        Venue & Dates
-                                    </p>
-                                    <p style='margin: 5px 0 0 0; font-size: 12px; color: #2d3748; font-weight: 700;'>
-                                        Anil Neerukonda Institute of Dental Sciences (ANIDS), Visakhapatnam<br>
-                                        November 27 - 29, 2026
-                                    </p>
-                                    <a class='btn btn-primary' style='display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 12px; padding: 8px 16px; border-radius: 4px; margin-top: 10px;' href='https://maps.app.goo.gl/Ahvtgbr7upqr4e3aA' target='_blank'>View Location</a>   
-                                </div>
-                                
-                                <p style='font-size: 12px; line-height: 1.6; color: #718096;'>
-                                    If you have any questions or require assistance with your  registration, please do not hesitate to contact our secretariat at <a href='mailto:registrations.30thiaphdnatcon@gmail.com'>registrations.30thiaphdnatcon@gmail.com</a>.
-                                </p>
-                            </div>
-                            <div class='footer'>
-                                <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
-                                Department of Public Health Dentistry, ANIDS<br>
-                                <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
-                            </div>
-                        </div>
-                    </body>
-                    </html>";
+                    $subject = "30th IAPHD NATCON 2026 Registration Confirmation [Resent]";
+                    $message = generate_confirmation_email_html($fullName, $generated_id, $category, $conn);
                     
                     $attachment_path = generate_receipt_image($record);
                     $attachment_name = "E-Receipt_" . $generated_id . ".png";
@@ -1887,7 +1775,7 @@ if ($method === 'POST') {
                             <div class='footer'>
                                 <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
                                 Department of Public Health Dentistry, ANIDS<br>
-                                <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
+                                <a href='https://iaphdnatcon2026.com/'>iaphdnatcon2026.com</a>
                             </div>
                         </div>
                     </body>
@@ -2291,7 +2179,7 @@ if ($method === 'POST') {
                 }
             } else if ($offline_online === 'offline' && $status === 'PENDING') {
                 // Generate sequential registration ID like OFFLINE-0001
-                $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE 'OFFLINE-%' ORDER BY created_at DESC, id DESC LIMIT 1");
+                $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE 'OFFLINE-%' ORDER BY LENGTH(id) DESC, id DESC LIMIT 1");
                 $stmt_count->execute();
                 $latest = $stmt_count->fetch(PDO::FETCH_ASSOC);
 
@@ -2303,18 +2191,23 @@ if ($method === 'POST') {
                 }
                 $generated_id = "OFFLINE-" . str_pad($next_num, 4, "0", STR_PAD_LEFT);
             } else {
-                // Generate sequential registration ID like NATCON-0001
-                $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE 'NATCON-%' ORDER BY created_at DESC, id DESC LIMIT 1");
+                // Generate sequential registration ID like NATCON-SD-001 or NATCON-FD-001
+                $is_student = (stripos($category, 'Student') !== false);
+                $prefix = $is_student ? 'NATCON-SD-' : 'NATCON-FD-';
+
+                $stmt_count = $conn->prepare("SELECT id FROM registrations WHERE id LIKE :prefix ORDER BY LENGTH(id) DESC, id DESC LIMIT 1");
+                $prefix_like = $prefix . '%';
+                $stmt_count->bindParam(':prefix', $prefix_like);
                 $stmt_count->execute();
                 $latest = $stmt_count->fetch(PDO::FETCH_ASSOC);
 
                 if ($latest) {
-                    $num = intval(str_replace('NATCON-', '', $latest['id']));
+                    $num = intval(str_replace($prefix, '', $latest['id']));
                     $next_num = $num + 1;
                 } else {
                     $next_num = 1;
                 }
-                $generated_id = "NATCON-" . str_pad($next_num, 4, "0", STR_PAD_LEFT);
+                $generated_id = $prefix . str_pad($next_num, 3, "0", STR_PAD_LEFT);
             }
 
             // Clean inputs for optional and other fields
@@ -2433,7 +2326,7 @@ if ($method === 'POST') {
                                 <div class='footer'>
                                     <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
                                     Department of Public Health Dentistry, ANIDS<br>
-                                    <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
+                                    <a href='https://iaphdnatcon2026.com/'>iaphdnatcon2026.com</a>
                                 </div>
                             </div>
                         </body>
@@ -2446,114 +2339,8 @@ if ($method === 'POST') {
                 } else {
                     try {
                         $to = $email;
-                        $subject = "Registration Confirmed - 30th IAPHD NATCON 2026 (ID: $generated_id)";
-                        
-                        $message = "
-                        <html>
-                        <head>
-                            <title>30th IAPHD NATCON 2026 Registration Confirmation</title>
-                            <style>
-                                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f7f9fc; color: #333333; margin: 0; padding: 0; }
-                                .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e1e8ed; }
-                                .header { background-color: #002147; padding: 40px 20px; text-align: center; color: #ffffff; border-bottom: 4px solid #d90a2c; }
-                                .header h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
-                                .header p { margin: 10px 0 0 0; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #a0aec0; text-transform: uppercase; }
-                                .content { padding: 40px 30px; }
-                                .greeting { font-size: 18px; font-weight: 700; color: #002147; margin-bottom: 20px; }
-                                .badge { display: inline-block; background-color: #d90a2c; color: #ffffff; font-weight: 800; padding: 8px 16px; border-radius: 4px; font-size: 14px; letter-spacing: 1px; margin-bottom: 30px; }
-                                .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                                .invoice-table th, .invoice-table td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; text-align: left; }
-                                .invoice-table th { background-color: #f7fafc; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; }
-                                .invoice-table td { font-size: 13px; font-weight: 600; }
-                                .invoice-table .label { color: #718096; font-size: 11px; text-transform: uppercase; font-weight: 700; }
-                                .invoice-table .value { color: #2d3748; }
-                                .invoice-table .amount { color: #d90a2c; font-weight: 800; font-size: 16px; }
-                                .status-pill { display: inline-block; background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-                                .footer { background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #edf2f7; font-size: 11px; color: #718096; line-height: 1.6; }
-                                .footer a { color: #d90a2c; text-decoration: none; font-weight: 700; }
-                            </style>
-                        </head>
-                        <body>
-                            <div class='container'>
-                                " . get_email_header_html($conn) . "
-                                <div class='content'>
-                                    <div class='greeting'>Dear $fullName,</div>
-                                    <p style='font-size: 14px; line-height: 1.6; color: #4a5568; margin-bottom: 25px;'>
-                                        Thank you for registering for the 30th IAPHD National Conference (IAPHD NATCON 2026) in Visakhapatnam. We are pleased to confirm that your registration has been received successfully.
-                                    </p>
-                                    
-                                    <div style='background-color: #f7fafc; border: 1px solid #edf2f7; padding: 20px; border-radius: 6px; margin-bottom: 25px; text-align: center;'>
-                                        <p style='margin: 0 0 10px 0; font-size: 11px; font-weight: 800; color: #718096; text-transform: uppercase; letter-spacing: 1px;'>My Profile Login Details</p>
-                                        <p style='margin: 5px 0; font-size: 13px; color: #2d3748;'><strong>Registration ID:</strong> <span style='font-family: monospace; font-size: 14px;'>$generated_id</span></p>
-                                        <p style='margin: 5px 0; font-size: 13px; color: #2d3748;'><strong>Password:</strong> <span style='font-family: monospace; font-size: 14px;'>$generated_password</span></p>
-                                        <p style='margin: 15px 0 0 0; font-size: 10px; color: #a0aec0;'>You can log in to your profile at any time to edit your details (except email and mobile number).</p>
-                                    </div>
-                                    
-                                    <div style='text-align: center;'>
-                                        <div class='badge'>REGISTRATION ID: $generated_id</div>
-                                    </div>
-                                    
-                                    <table class='invoice-table'>
-                                        <thead>
-                                            <tr>
-                                                <th colspan='2'>Registration Details</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class='label' style='width: 40%;'> Name</td>
-                                                <td class='value'>$fullName</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>City</td>
-                                                <td class='value'>$city</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>Category</td>
-                                                <td class='value'>$category</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>Registration Tier</td>
-                                                <td class='value'>" . ucfirst($tier) . "</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>Transaction ID</td>
-                                                <td class='value' style='font-family: monospace; font-size: 12px;'>" . ($transactionId ? $transactionId : 'N/A') . "</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>Amount Paid</td>
-                                                <td class='value amount'>₹" . number_format($amountPaid) . "</td>
-                                            </tr>
-                                            <tr>
-                                                <td class='label'>Payment Status</td>
-                                                <td class='value'><span class='status-pill'>" . strtoupper($status) . "</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    
-                                    <div style='background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; border-radius: 4px; margin-bottom: 30px;'>
-                                        <p style='margin: 0; font-size: 11px; color: #2b6cb0; line-height: 1.6; font-weight: 600; text-transform: uppercase;'>
-                                            Venue & Dates
-                                        </p>
-                                        <p style='margin: 5px 0 0 0; font-size: 12px; color: #2d3748; font-weight: 700;'>
-                                            Anil Neerukonda Institute of Dental Sciences (ANIDS), Visakhapatnam<br>
-                                            November 27 - 29, 2026
-                                        </p>
-                                        <a class='bg-[#00A8CC] text-white font-bold py-2 px-4 rounded' style='text-decoration: none; margin-top: 5px;' href='https://share.google/aLOIFbJOzwsDUgz0I'>location</a>
-                                    </div>
-                                    
-                                    <p style='font-size: 12px; line-height: 1.6; color: #718096;'>
-                                        If you have any questions or require assistance with your  registration, please do not hesitate to contact our secretariat at <a href='mailto:iaphdnatcon26@gmail.com'>iaphdnatcon26@gmail.com</a>.
-                                    </p>
-                                </div>
-                                <div class='footer'>
-                                    <strong>30th IAPHD NATCON 2026 Visakhapatnam</strong><br>
-                                    Department of Public Health Dentistry, ANIDS<br>
-                                    <a href='https://iaphdnatcon2026.com/natcon26'>iaphdnatcon2026.com</a>
-                                </div>
-                            </div>
-                        </body>
-                        </html>";
+                        $subject = "30th IAPHD NATCON 2026 Registration Confirmation";
+                        $message = generate_confirmation_email_html($fullName, $generated_id, $category, $conn);
                         
                         // Send SMTP email to delegate
                         $record_data = array(

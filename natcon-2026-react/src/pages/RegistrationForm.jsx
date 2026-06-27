@@ -195,7 +195,7 @@ const RegistrationForm = () => {
 
   const handlePrefillFromFailed = async (type, value) => {
     if (!value) return;
-    
+
     // Only prefill if critical profile data (like fullName) is still empty
     // so we don't overwrite user edits if they're actively editing
     if (formData.fullName && formData.councilRegNo) {
@@ -491,7 +491,7 @@ const RegistrationForm = () => {
     }
 
     const options = {
-      key: 'rzp_test_SoRhYUYZD5NZRE', // Provided test key
+      key: 'rzp_live_T0gMJGmPVeGA2T', // Provided test key
       amount: finalAmount * 100, // in paise
       currency: 'INR',
       name: '30th IAPHD NATCON 2026',
@@ -743,7 +743,7 @@ const RegistrationForm = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col space-y-2 shrink-0 md:text-right">
                   <Link
                     to="/utility?tab=profile"
@@ -1125,7 +1125,7 @@ const RegistrationForm = () => {
                               className="w-full  border border-softgray rounded-sm p-4 text-sm focus:border-[#00A8CC] outline-none transition-colors"
                             >
                               <option value="">Select Category</option>
-                              {tiers && tiers[0]?.pricing.map(p => (
+                              {tiers && tiers[0]?.pricing.filter(p => p.category !== "Accompanying person/Spouse").map(p => (
                                 <option key={p.category} value={p.category}>{p.category}</option>
                               ))}
                             </select>

@@ -520,7 +520,7 @@ const Hero = () => {
         loop
         muted
         playsInline
-        src="/natcon26/slider.mp4"
+        src="/slider.mp4"
         className="absolute inset-0 w-full h-full object-cover scale-105 pointer-events-none z-0"
       />
       {/* Dark Overlay Gradients for Perfect Text Contrast */}
@@ -1345,7 +1345,7 @@ const AppContent = () => {
   const { isPromoVideoOpen } = useConference();
 
   return (
-    <Router basename="/natcon26">
+    <Router basename="/">
       <ScrollToTop />
       <SeoController />
       {!isPromoVideoOpen && <Header />}

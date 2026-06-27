@@ -8,6 +8,13 @@ const Committees = () => {
   const { conferenceData, chiefPatron } = useConference();
   const [activeTab, setActiveTab] = useState('organizing');
 
+  const groupedConferenceCommittee = conferenceData.committees?.conferenceCommittee?.reduce((acc, member) => {
+    const role = member.role || 'Other';
+    if (!acc[role]) acc[role] = [];
+    acc[role].push(member);
+    return acc;
+  }, {}) || {};
+
   return (
     <div className="min-h-screen bg-midnight text-primary pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-4">
@@ -115,25 +122,33 @@ const Committees = () => {
               </div>
             </div>
             {/* Conference Committee Members List */}
-            {conferenceData.committees.conferenceCommittee && conferenceData.committees.conferenceCommittee.length > 0 && (
+            {Object.keys(groupedConferenceCommittee).length > 0 && (
               <div className="bg-secondary shadow-[0_4px_20px_rgba(20,33,61,0.05)] border border-softgray p-12 rounded-sm">
                 <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 flex items-center">
                   <Users className="w-8 h-8 text-[#00A8CC] mr-4" /> Conference Committee Members
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {conferenceData.committees.conferenceCommittee.map((member, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="flex items-center p-6 bg-midnight/50 border border-softgray rounded-sm hover:bg-softgray/25 transition-all"
-                    >
-                      <div>
-                        <h4 className="text-md font-black uppercase tracking-widest text-primary">{member.name}</h4>
-                        <p className="text-[12px] font-bold text-[#00A8CC] uppercase tracking-[2px] mt-1">{member.role}</p>
+                <div className="space-y-12">
+                  {Object.entries(groupedConferenceCommittee).map(([category, members], idx) => (
+                    <div key={idx}>
+                      <h4 className="text-xl font-black text-center uppercase tracking-widest text-[#00A8CC] mb-6 pb-2 border-b border-softgray/30">
+                        {category}
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {members.map((member, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            className="flex items-center p-6 bg-midnight/50 border border-softgray rounded-sm hover:bg-softgray/25 transition-all"
+                          >
+                            <div>
+                              <h5 className="text-md font-black uppercase tracking-widest text-primary">{member.name}</h5>
+                            </div>
+                          </motion.div>
+                        ))}
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>

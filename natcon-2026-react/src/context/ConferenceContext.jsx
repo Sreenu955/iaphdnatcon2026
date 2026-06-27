@@ -1461,6 +1461,7 @@ export const ConferenceProvider = ({ children }) => {
 
         if (success && dbSettings) {
           if (dbSettings.pricingPhase) setPricingPhaseState(dbSettings.pricingPhase);
+          if (dbSettings.homepageData) setHomepageDataState(dbSettings.homepageData);
           if (dbSettings.notification) setNotificationState(dbSettings.notification);
           if (dbSettings.speakers) setSpeakersState(dbSettings.speakers);
           if (dbSettings.faqs) setFaqsState(dbSettings.faqs);

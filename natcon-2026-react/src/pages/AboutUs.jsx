@@ -404,7 +404,7 @@ const AboutUs = () => {
               <div className="relative bg-black flex items-center justify-center">
                 <video
                   className="w-full aspect-video"
-                  src="/natcon26/promo.mp4"
+                  src="/promo.mp4"
                   autoPlay
                   controls
                   playsInline

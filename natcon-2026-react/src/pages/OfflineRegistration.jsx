@@ -437,12 +437,12 @@ const OfflineRegistration = () => {
 
             {/* Ticket Body */}
             <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-[9px] text-primary/50 font-bold uppercase tracking-wider block">Temporary ID</span>
-                  <strong className="text-[#00A8CC] text-lg font-mono tracking-wider">{registeredData.id}</strong>
+              <div className="flex justify-between items-center bg-lightbg p-3 rounded border border-softgray">
+                <div className="flex flex-col">
+                  <span className="text-[9px] text-primary/50 font-bold uppercase tracking-wider block">Status</span>
+                  <strong className="text-amber-600 text-sm tracking-wide uppercase">Pending Admin Approval</strong>
                 </div>
-                <div>
+                <div className="flex flex-col text-right">
                   <span className="text-[9px] text-primary/50 font-bold uppercase tracking-wider block">Submission Date</span>
                   <strong className="text-primary text-sm tracking-wide">
                     {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -503,7 +503,7 @@ const OfflineRegistration = () => {
             {/* Ticket Footer */}
             <div className="p-6 bg-lightbg border-t border-softgray text-center space-y-4">
               <p className="text-[10px] text-primary/70 leading-relaxed uppercase tracking-wider">
-                Please present this Temporary ID or your registered Email/Mobile at the offline registration counter to complete verification.
+                Please present your registered Email or Mobile at the offline registration counter to complete verification.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
@@ -858,7 +858,7 @@ const OfflineRegistration = () => {
                   
                   <div className="flex justify-center">
                     <img
-                      src="/natcon26/pnb-qr.png"
+                      src="/pnb-qr.png"
                       alt="PNB UPI Scan & Pay QR Code"
                       className="w-56 h-auto border border-softgray rounded shadow-md"
                     />
